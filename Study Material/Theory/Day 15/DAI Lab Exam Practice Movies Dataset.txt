@@ -1,0 +1,142 @@
+Q.1> Import movies.csv into python using appropriate packages. Extract title, budget, revenue_msusd, production_companies, runtime, cast_size from the imported dataset. Remove missing values from the dataset. Print top 20 rows for columns title, budget, and runtime.
+
+import pandas as pd
+
+# Import the dataset
+df = pd.read_csv('movies.csv')
+
+# Extracting required columns
+selected_columns = ['title', 'budget_musd', 'revenue_musd', 'production_companies', 'runtime', 'cast_size']
+df_selected = df[selected_columns]
+
+# Remove missing values
+df_selected = df_selected.dropna()
+
+# Print top 20 rows
+print(df_selected[['title', 'budget_musd', 'runtime']].head(20))
+
+
+Q.2> Impute median in missing data of vote_average column in dataset and then perform an Outlier detection on it and create a box-plot for the same.
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Import the dataset
+df = pd.read_csv('movies.csv')  # Replace 'movies.csv' with the name of your dataset file
+
+# Impute median for missing values in the budget_musd column
+avg_vote = df['vote_average'].median()
+df['vote_average'].fillna(avg_vote, inplace=True)
+
+# Calculate quartiles
+q1 = df['vote_average'].quantile(0.25)
+q3 = df['vote_average'].quantile(0.75)
+iqr = q3 - q1
+
+print (f"Median of average vote = {avg_vote}")
+print (f"Q1 of average vote = {q1}")
+print (f"Q3 of average vote = {q3}")
+print (f"IQR of average vote = {iqr}")
+
+# Determine outlier threshold
+lower_bound = q1 - 1.5 * iqr
+upper_bound = q3 + 1.5 * iqr
+
+# Identify outliers
+outliers = df[(df['vote_average'] < lower_bound) | (df['vote_average'] > upper_bound)]['vote_average']
+
+# Create a box plot for vote_average column with outliers shown separately
+plt.figure(figsize=(8, 6))
+sns.boxplot(x='vote_average', data=df, showfliers=True, medianprops=dict(color='red'), flierprops=dict(marker='o', markerfacecolor='red', markersize=8))
+plt.scatter(x=[0.5], y=[avg_vote], color='red', s=100, label='Median')
+plt.axvline(x=q1, linestyle='--', color='blue', label='Q1')
+plt.axvline(x=q3, linestyle='--', color='blue', label='Q3')
+plt.axvline(x=lower_bound, linestyle='--', color='green', label='Lower Bound (Q1 - 1.5*IQR)')
+plt.axvline(x=upper_bound, linestyle='--', color='green', label='Upper Bound (Q3 + 1.5*IQR)')
+plt.legend()
+plt.title('Box Plot of Average Vote (with IQR and Outliers)')
+plt.show()
+
+# Print outlier values
+print("Outlier values:")
+print(outliers.tolist())
+
+
+Q.3> Find the column which has maximum missing data in it. For that column update the missing data with the mean of the “cast_size” value.
+
+import pandas as pd
+
+# Import the dataset
+df = pd.read_csv('movies.csv')
+
+# Find the column with the maximum missing data
+max_missing_column = df.isnull().sum().idxmax()
+
+# Display count of null values before filling them with the mean
+print("Count of null values in", max_missing_column, "before filling:", df[max_missing_column].isnull().sum())
+
+# Convert 'cast_size' column to float
+df['cast_size'] = pd.to_numeric(df['cast_size'], errors='coerce').astype(float)
+
+# Calculate the mean of 'cast_size' column
+mean_cast_size = df['cast_size'].mean()
+
+# Fill missing values in the column with the mean of 'cast_size' value
+df[max_missing_column].fillna(mean_cast_size, inplace=True)
+
+# Print the column with the maximum missing data
+print("Column with the maximum missing data:", max_missing_column)
+
+# Print updated column, where nulls were filled with average of cast size column
+print("Updated column:")
+print(df[max_missing_column])
+
+
+Q.4> Calculate Mean, Median, Mode, Quartile Ranges, Standard Deviation of Runtime for “spoken_languages” column is only English, where crew_size > cast_size.
+
+import pandas as pd
+
+# Import the dataset
+df = pd.read_csv('movies.csv')
+
+# Convert runtime, crew_size, and cast_size columns to integers with coercion
+df.dropna(subset=['runtime', 'crew_size', 'cast_size'], inplace=True)
+
+df['runtime'] = pd.to_numeric(df['runtime'], errors='coerce').astype(int)
+df['crew_size'] = pd.to_numeric(df['crew_size'], errors='coerce').astype(int)
+df['cast_size'] = pd.to_numeric(df['cast_size'], errors='coerce').astype(int)
+
+print(f"Original dataframe row count: {df.shape[0]}")
+
+# Filter the DataFrame
+filtered_df = df[(df['spoken_languages'] == 'English') & (df['crew_size'] > df['cast_size'])]
+
+print(f"Filtered dataframe row count: {filtered_df.shape[0]}")
+
+# Calculate Mean
+mean_runtime = filtered_df['runtime'].mean()
+
+# Calculate Median
+median_runtime = filtered_df['runtime'].median()
+
+# Calculate Mode
+mode_runtime = filtered_df['runtime'].mode().iloc[0]
+
+# Calculate Quartile Ranges
+q1_runtime = filtered_df['runtime'].quantile(0.25)
+q3_runtime = filtered_df['runtime'].quantile(0.75)
+iqr_runtime = q3_runtime - q1_runtime
+
+# Calculate Standard Deviation
+std_runtime = filtered_df['runtime'].std()
+
+# Print the results
+print("Mean Runtime:", mean_runtime)
+print("Median Runtime:", median_runtime)
+print("Mode Runtime:", mode_runtime)
+print("1st Quartile Runtime:", q1_runtime)
+print("3rd Quartile Runtime:", q3_runtime)
+print("Interquartile Range of Runtime:", iqr_runtime)
+print("Standard Deviation of Runtime:", std_runtime)
+

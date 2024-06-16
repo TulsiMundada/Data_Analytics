@@ -1,0 +1,8 @@
+Q.1> Import movies.csv into python using appropriate packages. Extract title, budget, revenue_msusd, production_companies, runtime, cast_size from the imported dataset. Remove missing values from the dataset. Print top 20 rows for columns title, budget, and runtime.
+
+Q.2> Impute median in missing data of vote_average column in dataset and then perform an Outlier detection on it and create a box-plot for the same.
+
+Q.3> Find the column which has maximum missing data in it. For that column update the missing data with the mean of the “cast_size” value.
+
+Q.4> Calculate Mean, Median, Mode, Quartile Ranges, Standard Deviation of Runtime for where “spoken_languages” column contains only English, where crew_size > cast_size.
+
